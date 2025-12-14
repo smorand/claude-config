@@ -1,0 +1,131 @@
+---
+name: data-retrieval
+description: Comprehensive data retrieval guide for L'Oréal BTDP infrastructure. Use when searching for repositories, applications, projects, datasets, tables, domains, IT organizations, stories, epics, groups, APIs, or Confluence pages. (project, gitignored)
+---
+
+# Data Retrieval Specialist
+
+Expert in retrieving data from L'Oréal's Beauty Tech Data Platform (BTDP) using RAG indices, SDDS tools, ITBM integration, and SQL fallbacks.
+
+## Quick Decision Tree
+
+```
+What type of data?
+
+├── Code/Repos → RAG: smo_repository_v1
+├── Applications → RAG: application_service_name_v1 OR itbm_search_application()
+├── GCP Projects → RAG: smo_project_v1
+├── Datasets → RAG: smo_dataset_v1 OR sdds_search_datasets()
+├── Tables → RAG: smo_table_v1 OR sdds_search_tables() OR SQL fallback
+├── Domains → RAG: domains_v1
+├── IT Orgs → RAG: it_organizations_v3
+├── Stories → itbm_get_stories() OR SQL fallback
+├── Epics → itbm_get_epics() OR itbm_search_epic_story()
+├── Sprints → itbm_get_sprints()
+├── Enhancements → itbm_search_enhancement()
+├── Groups (Google) → groups_search_groups() OR groups_search_similar_groups()
+├── APIs → apis_list_apis() OR apis_search_api()
+├── Confluence → confluence_search()
+├── Permissions → sdds_list_dataset_permissions()
+└── Custom → sdds_execute_query()
+```
+
+## Core Retrieval Methods
+
+### Method 1: RAG Index (Fastest)
+For: Repositories, projects, datasets, tables, domains, IT orgs
+
+```python
+mcp__mcprelay__rag_query_rag(
+    index="<index_name>",
+    query="<search_term>"
+)
+```
+
+**Available Indices:**
+- `smo_repository_v1` - Git repositories
+- `smo_project_v1` - GCP projects
+- `smo_dataset_v1` - BigQuery datasets
+- `smo_table_v1` - BigQuery tables
+- `application_service_name_v1` - Application services
+- `domains_v1` - Domain information
+- `it_organizations_v3` - IT organizations
+
+**Important:** Don't include index type in query unless meaningful redundancy
+- ✅ "GCP datasets" on index `smo_table_v1`
+- ❌ "GCP datasets table" on index `smo_table_v1`
+
+### Method 2: SDDS Tools (Detailed)
+For: BigQuery resources, dataset permissions
+
+Tools: `sdds_list_datasets`, `sdds_search_datasets`, `sdds_list_tables`, `sdds_search_tables`, `sdds_get_schema`, `sdds_list_dataset_permissions`
+
+### Method 3: ITBM Tools (Project Management)
+For: Stories, epics, sprints, enhancements, assignment groups
+
+Tools: `itbm_get_stories`, `itbm_get_epics`, `itbm_get_sprints`, `itbm_search_enhancement`, `itbm_search_assignment_group`
+
+### Method 4: Google Groups
+Tools: `groups_search_groups`, `groups_search_similar_groups`, `groups_get_members`
+
+### Method 5: APIs & Confluence
+Tools: `apis_list_apis`, `apis_search_api`, `confluence_search`, `confluence_get_page`
+
+### Method 6: SQL Fallback
+When RAG/MCP tools fail, query SDDS tables directly with `sdds_execute_query()`
+
+## Fallback Strategy
+
+```
+1. Try RAG index (fastest, semantic search)
+2. Try MCP tools (SDDS/ITBM with specific filters)
+3. Try SQL fallback on SDDS tables (regexp search)
+4. If still not found, broaden search terms or verify table names
+```
+
+## SDDS Context
+
+- **SDDS Project**: `itg-btdppublished-gbl-ww-pd`
+- **Exploration Project**: `oa-data-btdpexploration-np`
+- **Dataset Naming**: `btdp_ds_c[123]_<domain>_<label>_eu_pd`
+- **Domain Pattern**: `c[123]` where domain_id like `0a1`, `053`, etc.
+
+## Key Tables for SQL Fallback
+
+All in `itg-btdppublished-gbl-ww-pd`:
+- **Projects**: `btdp_ds_c1_0a1_gcpassets_eu_pd.projects_v3`
+- **Tables**: `btdp_ds_c1_0a1_gcpassets_eu_pd.tables_v2`
+- **App Services**: `btdp_ds_c1_053_apm_eu_pd.application_service_v1`
+- **Stories**: `btdp_ds_c1_054_agile_eu_pd.story_v1`
+- **Epics**: `btdp_ds_c1_054_agile_eu_pd.epic_v1`
+- **Sprints**: `btdp_ds_c1_054_agile_eu_pd.sprint_v1`
+- **Enhancements**: `btdp_ds_c1_055_itbm_eu_pd.enhancement_v1`
+
+## Best Practices
+
+1. **RAG first** for quick searches (repositories, projects, domains)
+2. **SDDS tools** for BigQuery resources with environment filters (dv, qa, np, pd)
+3. **ITBM tools** for project management (stories, epics, sprints)
+4. **Use limit** parameter to reduce result size (default: 100)
+5. **Filter by environment** when possible to reduce noise
+6. **Specific patterns** over broad queries for better results
+
+## Detailed References
+
+For detailed tool usage, parameters, and examples, see:
+- [Repositories & Applications](references/repos-apps.md)
+- [GCP Resources](references/gcp-resources.md)
+- [BigQuery Resources](references/bigquery.md)
+- [Project Management](references/project-mgmt.md)
+- [Groups & APIs](references/groups-apis.md)
+- [Confluence](references/confluence.md)
+- [SQL Fallbacks](references/sql-fallbacks.md)
+
+## Response Style
+
+- Clearly state which method is being used and why
+- Show exact tool call with parameters
+- Provide context about results found
+- Suggest alternative methods if first attempt fails
+- Format results with clear hierarchy (project > dataset > table)
+- Explain any limitations or filtering applied

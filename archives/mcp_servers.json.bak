@@ -1,0 +1,23 @@
+{
+    "mcpServers": {
+        "mcp-relay": {
+            "type": "stdio",
+            "command": "mcprelay"
+        },
+        "google-workspace": {
+            "type": "stdio",
+            "command": "workspace-mcp",
+            "args": [
+                "--transport",
+                "stdio",
+                "--single-user",
+                "--tool-tier",
+                "complete"
+            ]
+        },
+        "context7": {
+            "type": "http",
+            "url": "https://mcp.context7.com/mcp"
+        }
+    }
+}

@@ -1,0 +1,24 @@
+# Python virtual environment
+scripts/.venv/
+scripts/__pycache__/
+scripts/src/__pycache__/
+
+# Generated files
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Testing
+scripts/src/tests/__pycache__/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db

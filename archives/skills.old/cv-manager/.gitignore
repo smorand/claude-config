@@ -1,0 +1,19 @@
+# Python virtual environment
+scripts/.venv/
+scripts/__pycache__/
+scripts/src/__pycache__/
+
+# Environment variables
+.env
+
+# Python compiled files
+*.pyc
+*.pyo
+*.pyd
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~

@@ -1,0 +1,43 @@
+{
+  "vip_senders": [
+    "marcelo.goes@loreal.com",
+    "etienne.bertin@loreal.com",
+    "adrien.braure@loreal.com",
+    "antoine.marechal@loreal.com",
+    "antoine.castex@loreal.com",
+    "laurent.marin-lamellet@loreal.com",
+    "laurent.marin@loreal.com",
+    "pablo.emanuel@loreal.com",
+    "xia.chen@loreal.com",
+    "emilia.chamberlain@loreal.com",
+    "amine.chlyeh@loreal.com",
+    "thierry.zhu@loreal.com"
+  ],
+  "partner_whitelist": [
+    "@sap.com",
+    "@google.com",
+    "@microsoft.com",
+    "@databricks.com",
+    "@castelis.com"
+  ],
+  "auto_archive_keywords": [
+    "consultant disponible",
+    "dispo asap",
+    "profil disponible",
+    "candidat disponible",
+    "ressource disponible",
+    "technicien disponible",
+    "ingénieur disponible"
+  ],
+  "auto_archive_domains": [
+    "@brevosend.com",
+    "promo@"
+  ],
+  "system_emails": [
+    "wfpbc@corpemea-pbc.sap"
+  ],
+  "auto_archive_subjects": [
+    "declined:",
+    "annulé :"
+  ]
+}

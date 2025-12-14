@@ -1,0 +1,18 @@
+[project]
+name = "google-slides-translator"
+version = "1.0.0"
+description = "Translate Google Slides presentations while preserving formatting"
+requires-python = ">=3.8"
+dependencies = [
+    "google-api-python-client>=2.100.0",
+    "google-auth-httplib2>=0.1.1",
+    "google-auth-oauthlib>=1.1.0",
+    "google-cloud-translate>=3.12.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src"]

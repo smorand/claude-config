@@ -1,0 +1,21 @@
+[project]
+name = "o365-manager"
+version = "1.0.0"
+description = "Office 365 email and calendar management tool with OAuth 2.1 PKCE"
+requires-python = ">=3.13"
+dependencies = [
+    "requests>=2.31.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "black>=23.0.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src"]
