@@ -7,13 +7,17 @@ description: Gestionnaire d'emails Gmail PERSONNELS en français pour scanner, t
 
 Skill de gestion automatisée des emails Gmail en français.
 
-## Outils disponibles
+## Outil disponible
 
 ### CLI Go - email-manager
-Un outil en ligne de commande moderne en Go pour les opérations courantes :
-- **Installation** : `cd ~/projects/new/email-manager && make install`
-- **Binaire** : `email-manager` (installé dans `/usr/local/bin`)
-- **Commandes disponibles** :
+
+Un outil en ligne de commande moderne en Go pour toutes les opérations de gestion d'emails.
+
+**Binaire** : `~/.claude/skills/email-manager/scripts/email-manager`
+
+**Code source** : `~/projects/new/email-manager/`
+
+**Commandes disponibles** :
   - `send` - Envoyer des emails
   - `list` - Lister les messages
   - `get` - Obtenir un message par ID
@@ -22,12 +26,21 @@ Un outil en ligne de commande moderne en Go pour les opérations courantes :
   - `archive` - Archiver un message
   - `delete` - Supprimer un message
   - `download-attachments` - Télécharger les pièces jointes
-  - `labels list/create/apply` - Gérer les labels
+  - `labels list/create/apply/remove` - Gérer les labels
+  - `drafts list/create/delete` - Gérer les brouillons
+  - `trash` / `untrash` - Gérer la corbeille
+  - `spam` / `not-spam` - Gérer le spam
 
-**Utiliser `email-manager` pour les opérations de téléchargement de pièces jointes et autres opérations basiques.**
+**Utilisation** :
+```bash
+~/.claude/skills/email-manager/scripts/email-manager [command] [args...]
+```
 
-### Scripts Python (legacy)
-Les scripts Python dans `~/.claude/skills/email-manager/scripts/` restent disponibles pour les opérations avancées (tri automatique, gestion des brouillons, etc.).
+**Aide** :
+```bash
+~/.claude/skills/email-manager/scripts/email-manager --help
+~/.claude/skills/email-manager/scripts/email-manager [command] --help
+```
 
 ## Objectif
 
@@ -70,11 +83,10 @@ Si l'utilisateur demande explicitement de scanner un autre label (ex: "regarde m
 
 **Par défaut : Scanner l'INBOX**
 
-Utiliser le script `search_email` pour récupérer les emails de l'INBOX :
+Utiliser le binaire `email-manager` pour récupérer les emails de l'INBOX :
 
 ```bash
-cd ~/.claude/skills/email-manager/scripts
-./run.sh search_email --query "label:INBOX newer_than:7d" --max-results 100 --full
+~/.claude/skills/email-manager/scripts/email-manager search "label:INBOX newer_than:7d" --max-results 100
 ```
 
 **Requêtes pour l'INBOX :**
@@ -86,7 +98,7 @@ cd ~/.claude/skills/email-manager/scripts
 
 Si l'utilisateur demande un label spécifique (ex: "regarde personal/voyage"), utiliser :
 ```bash
-./run.sh search_email --query "label:personal/voyage newer_than:7d" --max-results 100 --full
+~/.claude/skills/email-manager/scripts/email-manager search "label:personal/voyage newer_than:7d" --max-results 100
 ```
 
 **Pendant le tri automatique** - ne PAS scanner les autres labels, ils contiennent des emails déjà traités.
@@ -96,52 +108,50 @@ Consulter `references/regles-tri.md` pour les règles détaillées par type d'em
 
 ### 3. Actions disponibles
 
-**Utiliser le CLI Go `email-manager` pour les actions basiques :**
+**Utiliser le binaire `email-manager` pour toutes les actions :**
 
 #### Marquer comme lu
 ```bash
-email-manager read "MESSAGE_ID"
+~/.claude/skills/email-manager/scripts/email-manager read "MESSAGE_ID"
 ```
 
 #### Marquer comme non lu
 ```bash
-email-manager unread "MESSAGE_ID"
+~/.claude/skills/email-manager/scripts/email-manager unread "MESSAGE_ID"
 ```
 
 #### Archiver (retirer de INBOX)
 ```bash
-email-manager archive "MESSAGE_ID"
+~/.claude/skills/email-manager/scripts/email-manager archive "MESSAGE_ID"
 ```
 
 #### Ajouter un label
 ```bash
 # D'abord lister les labels pour obtenir les IDs
-email-manager labels list
+~/.claude/skills/email-manager/scripts/email-manager labels list
 
 # Ensuite ajouter le label (utiliser l'ID du label)
-email-manager labels apply "MESSAGE_ID" "LABEL_ID"
+~/.claude/skills/email-manager/scripts/email-manager labels apply "MESSAGE_ID" "LABEL_ID"
 ```
 
 #### Télécharger les pièces jointes (dans ~/Downloads)
 ```bash
 # Télécharger toutes les pièces jointes dans ~/Downloads (par défaut)
-email-manager download-attachments "MESSAGE_ID"
+~/.claude/skills/email-manager/scripts/email-manager download-attachments "MESSAGE_ID"
 
 # Télécharger dans un répertoire spécifique
-email-manager download-attachments "MESSAGE_ID" --dir "/path/to/dir"
+~/.claude/skills/email-manager/scripts/email-manager download-attachments "MESSAGE_ID" --dir "/path/to/dir"
 
 # Télécharger dans le répertoire courant
-email-manager download-attachments "MESSAGE_ID" --dir .
+~/.claude/skills/email-manager/scripts/email-manager download-attachments "MESSAGE_ID" --dir .
 ```
 
-**Important :** Les pièces jointes sont toujours téléchargées dans `~/Downloads` par défaut. Le nouveau CLI Go `email-manager` remplace le script Python `download_attachment.py`.
+**Important :** Les pièces jointes sont toujours téléchargées dans `~/Downloads` par défaut.
 
 #### Supprimer un message (mettre à la corbeille)
 ```bash
-email-manager delete "MESSAGE_ID"
+~/.claude/skills/email-manager/scripts/email-manager trash "MESSAGE_ID"
 ```
-
-**Note:** Pour suppression définitive ou gestion spam avancée, utiliser les scripts Python.
 
 **⚠️ Actions nécessitant confirmation utilisateur :**
 - **Paiements à effectuer** : TOUJOURS demander avant d'archiver
@@ -199,40 +209,35 @@ Créer un rapport concis :
 ### Exemple : Scanner et traiter INBOX
 
 ```bash
-# 1. Scanner INBOX pour emails non lus (utiliser script Python pour recherche)
-cd ~/.claude/skills/email-manager/scripts
-./run.sh search_email --query "label:INBOX is:unread" --max-results 50 --full
+# 1. Scanner INBOX pour emails non lus
+~/.claude/skills/email-manager/scripts/email-manager search "label:INBOX is:unread" --max-results 50
 
 # 2. Analyser chaque email selon les règles dans references/regles-tri.md
 
 # 3. Pour un email de confirmation de commande Amazon (exemple):
-# - Marquer lu (CLI Go)
-email-manager read "MESSAGE_ID"
+# - Marquer lu
+~/.claude/skills/email-manager/scripts/email-manager read "MESSAGE_ID"
 
-# - Lister les labels pour trouver l'ID de "personal/commandes" (CLI Go)
-email-manager labels list
+# - Lister les labels pour trouver l'ID de "personal/commandes"
+~/.claude/skills/email-manager/scripts/email-manager labels list
 
-# - Ajouter le label personal/commandes (CLI Go)
-email-manager labels apply "MESSAGE_ID" "LABEL_ID"
+# - Ajouter le label personal/commandes
+~/.claude/skills/email-manager/scripts/email-manager labels apply "MESSAGE_ID" "LABEL_ID"
 
-# - Archiver (retirer de INBOX) (CLI Go)
-email-manager archive "MESSAGE_ID"
+# - Archiver (retirer de INBOX)
+~/.claude/skills/email-manager/scripts/email-manager archive "MESSAGE_ID"
 
-# 4. Pour un code SafeKey expiré (CLI Go):
-email-manager delete "MESSAGE_ID"
+# 4. Pour un code SafeKey expiré:
+~/.claude/skills/email-manager/scripts/email-manager trash "MESSAGE_ID"
 
 # 5. Répéter pour tous les emails trouvés
 ```
-
-**Stratégie recommandée :**
-- Utiliser les **scripts Python** pour recherche et analyse complexe
-- Utiliser le **CLI Go `email-manager`** pour les actions (read, archive, delete, download-attachments, labels)
 
 ### ⚠️ Important : Ne scanner QUE l'INBOX
 
 ```bash
 # Scanner UNIQUEMENT l'INBOX
-./run.sh search_email --query "label:INBOX newer_than:7d" --full
+~/.claude/skills/email-manager/scripts/email-manager search "label:INBOX newer_than:7d"
 
 # ❌ NE PAS scanner les autres labels lors du tri
 # Les emails déjà classés ne doivent JAMAIS être re-triés
@@ -244,7 +249,7 @@ email-manager delete "MESSAGE_ID"
 
 #### Email simple
 ```bash
-./run.sh send_email \
+~/.claude/skills/email-manager/scripts/email-manager send \
   --to "destinataire@example.com" \
   --subject "Sujet de l'email" \
   --body "Corps de l'email"
@@ -252,7 +257,7 @@ email-manager delete "MESSAGE_ID"
 
 #### Email avec CC et BCC
 ```bash
-./run.sh send_email \
+~/.claude/skills/email-manager/scripts/email-manager send \
   --to "destinataire@example.com" \
   --subject "Sujet" \
   --body "Corps" \
@@ -262,7 +267,7 @@ email-manager delete "MESSAGE_ID"
 
 #### Email avec pièces jointes
 ```bash
-./run.sh send_email \
+~/.claude/skills/email-manager/scripts/email-manager send \
   --to "destinataire@example.com" \
   --subject "Documents" \
   --body "Voici les documents demandés" \
@@ -273,17 +278,22 @@ email-manager delete "MESSAGE_ID"
 
 #### Recherche simple
 ```bash
-./run.sh search_email --query "is:unread"
+~/.claude/skills/email-manager/scripts/email-manager search "is:unread"
 ```
 
-#### Recherche avec détails complets
+#### Recherche avec limite de résultats
 ```bash
-./run.sh search_email --query "from:example@gmail.com" --full
+~/.claude/skills/email-manager/scripts/email-manager search "from:example@gmail.com" --max-results 50
 ```
 
 #### Obtenir les détails d'un email spécifique
 ```bash
-./run.sh gmail_client --action get --message-id "MESSAGE_ID"
+~/.claude/skills/email-manager/scripts/email-manager get "MESSAGE_ID"
+```
+
+#### Lister les emails
+```bash
+~/.claude/skills/email-manager/scripts/email-manager list --max-results 20
 ```
 
 #### Exemples de requêtes Gmail
@@ -298,38 +308,34 @@ email-manager delete "MESSAGE_ID"
 
 #### Lister tous les labels
 ```bash
-./run.sh manage_labels --action list
+~/.claude/skills/email-manager/scripts/email-manager labels list
 ```
 
 #### Créer un nouveau label
 ```bash
-./run.sh manage_labels --action create --label-name "personal/nouveau"
+~/.claude/skills/email-manager/scripts/email-manager labels create "personal/nouveau"
 ```
 
-#### Ajouter des labels à un email
+#### Ajouter un label à un email
 ```bash
-./run.sh manage_labels --action add \
-  --message-id "MESSAGE_ID" \
-  --label-ids "Label_123" "Label_456"
+~/.claude/skills/email-manager/scripts/email-manager labels apply "MESSAGE_ID" "LABEL_ID"
 ```
 
-#### Retirer des labels d'un email
+#### Retirer un label d'un email
 ```bash
-./run.sh manage_labels --action remove \
-  --message-id "MESSAGE_ID" \
-  --label-ids "INBOX"
+~/.claude/skills/email-manager/scripts/email-manager labels remove "MESSAGE_ID" "LABEL_ID"
 ```
 
 ### 📝 Gestion des brouillons
 
 #### Lister les brouillons
 ```bash
-./run.sh manage_drafts --action list
+~/.claude/skills/email-manager/scripts/email-manager drafts list
 ```
 
 #### Créer un brouillon simple
 ```bash
-./run.sh manage_drafts --action create \
+~/.claude/skills/email-manager/scripts/email-manager drafts create \
   --to "destinataire@example.com" \
   --subject "Sujet" \
   --body "Corps du brouillon"
@@ -337,7 +343,7 @@ email-manager delete "MESSAGE_ID"
 
 #### Créer un brouillon avec pièces jointes
 ```bash
-./run.sh manage_drafts --action create \
+~/.claude/skills/email-manager/scripts/email-manager drafts create \
   --to "destinataire@example.com" \
   --subject "Documents" \
   --body "Voici les documents" \
@@ -346,57 +352,51 @@ email-manager delete "MESSAGE_ID"
 
 #### Supprimer un brouillon
 ```bash
-./run.sh manage_drafts --action delete --draft-id "r1234567890"
+~/.claude/skills/email-manager/scripts/email-manager drafts delete "DRAFT_ID"
 ```
 
 ### 🗑️ Suppression et gestion spam
 
 #### Mettre dans la corbeille
 ```bash
-./run.sh delete_email --action trash --message-id "MESSAGE_ID"
+~/.claude/skills/email-manager/scripts/email-manager trash "MESSAGE_ID"
 ```
 
 #### Restaurer de la corbeille
 ```bash
-./run.sh delete_email --action untrash --message-id "MESSAGE_ID"
+~/.claude/skills/email-manager/scripts/email-manager untrash "MESSAGE_ID"
 ```
 
-#### Supprimer définitivement (demande confirmation)
+#### Supprimer définitivement
 ```bash
-./run.sh delete_email --action delete --message-id "MESSAGE_ID"
+~/.claude/skills/email-manager/scripts/email-manager delete "MESSAGE_ID"
 ```
 
 #### Marquer comme spam
 ```bash
-./run.sh delete_email --action spam --message-id "MESSAGE_ID"
+~/.claude/skills/email-manager/scripts/email-manager spam "MESSAGE_ID"
 ```
 
 #### Retirer du spam
 ```bash
-./run.sh delete_email --action not-spam --message-id "MESSAGE_ID"
-```
-
-#### Suppression en lot (demande confirmation)
-```bash
-./run.sh delete_email --action batch-delete \
-  --message-ids "MESSAGE_ID1" "MESSAGE_ID2" "MESSAGE_ID3"
+~/.claude/skills/email-manager/scripts/email-manager not-spam "MESSAGE_ID"
 ```
 
 ### 📖 Opérations de lecture
 
 #### Marquer comme lu
 ```bash
-./run.sh gmail_client --action read --message-id "MESSAGE_ID"
+~/.claude/skills/email-manager/scripts/email-manager read "MESSAGE_ID"
 ```
 
 #### Marquer comme non lu
 ```bash
-./run.sh gmail_client --action unread --message-id "MESSAGE_ID"
+~/.claude/skills/email-manager/scripts/email-manager unread "MESSAGE_ID"
 ```
 
 #### Archiver (retirer de INBOX)
 ```bash
-./run.sh gmail_client --action archive --message-id "MESSAGE_ID"
+~/.claude/skills/email-manager/scripts/email-manager archive "MESSAGE_ID"
 ```
 
 ## Références
@@ -404,7 +404,6 @@ email-manager delete "MESSAGE_ID"
 - [Règles de tri détaillées](references/regles-tri.md) - Règles par type d'email et expéditeur
 - [Patterns d'emails](references/patterns-emails.md) - Expressions régulières pour identifier les types d'emails
 - [Filtres évolutifs](references/filtres-evolutifs.md) - Liste des expéditeurs filtrés automatiquement (mise à jour dynamique)
-- [Scripts Gmail](scripts/README.md) - Documentation complète des scripts disponibles
 
 ## Évolution des règles
 

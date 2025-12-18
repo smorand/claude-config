@@ -34,80 +34,72 @@ Use this skill when users request:
 
 ## Available Tools
 
-### YouTube Manager Script
+### YouTube Manager Binary
 
-**Location:** `~/.claude/skills/youtube-manager/scripts/`
+**Location:** `~/.claude/skills/youtube-manager/scripts/youtube-manager`
 
-**Structure:**
-```
-~/.claude/skills/youtube-manager/scripts/
-├── run.sh                  # Generic script runner
-├── pyproject.toml          # Python dependencies
-├── .venv/                  # Auto-created virtual environment
-└── src/
-    └── youtube_manager.py  # Python YouTube manager script
-```
+**Binary:** Pre-compiled Go executable (no dependencies required)
 
 **Usage:**
 ```bash
 # List playlists
-~/.claude/skills/youtube-manager/scripts/run.sh youtube_manager list-playlists [--limit N]
+~/.claude/skills/youtube-manager/scripts/youtube-manager list-playlists [--limit N]
 
 # Get playlist videos
-~/.claude/skills/youtube-manager/scripts/run.sh youtube_manager get-playlist <playlist_id> [--limit N]
+~/.claude/skills/youtube-manager/scripts/youtube-manager get-playlist <playlist_id> [--limit N]
 
 # Download video
-~/.claude/skills/youtube-manager/scripts/run.sh youtube_manager download <url> [--output DIR] [--format FORMAT] [--audio-only]
+~/.claude/skills/youtube-manager/scripts/youtube-manager download <url> [--output DIR] [--format FORMAT] [--audio-only]
 
 # Search videos
-~/.claude/skills/youtube-manager/scripts/run.sh youtube_manager search <query> [--limit N]
+~/.claude/skills/youtube-manager/scripts/youtube-manager search <query> [--limit N]
 
 # Get video info
-~/.claude/skills/youtube-manager/scripts/run.sh youtube_manager get-video <video_id>
+~/.claude/skills/youtube-manager/scripts/youtube-manager get-video <video_id>
 
 # Create playlist
-~/.claude/skills/youtube-manager/scripts/run.sh youtube_manager create-playlist <title> [--description DESC] [--privacy private|public|unlisted]
+~/.claude/skills/youtube-manager/scripts/youtube-manager create-playlist <title> [--description DESC] [--privacy private|public|unlisted]
 
 # Delete playlist
-~/.claude/skills/youtube-manager/scripts/run.sh youtube_manager delete-playlist <playlist_id>
+~/.claude/skills/youtube-manager/scripts/youtube-manager delete-playlist <playlist_id>
 
 # Add video to playlist
-~/.claude/skills/youtube-manager/scripts/run.sh youtube_manager add-to-playlist <playlist_id> <video_id>
+~/.claude/skills/youtube-manager/scripts/youtube-manager add-to-playlist <playlist_id> <video_id>
 ```
 
 **Examples:**
 ```bash
 # List all playlists
-~/.claude/skills/youtube-manager/scripts/run.sh youtube_manager list-playlists
+~/.claude/skills/youtube-manager/scripts/youtube-manager list-playlists
 
 # Get videos from a specific playlist
-~/.claude/skills/youtube-manager/scripts/run.sh youtube_manager get-playlist PLrAXtmErZgOeiKm4sgNOknGvNjby9efdf
+~/.claude/skills/youtube-manager/scripts/youtube-manager get-playlist PLrAXtmErZgOeiKm4sgNOknGvNjby9efdf
 
 # Download a video
-~/.claude/skills/youtube-manager/scripts/run.sh youtube_manager download "https://youtube.com/watch?v=dQw4w9WgXcQ"
+~/.claude/skills/youtube-manager/scripts/youtube-manager download "https://youtube.com/watch?v=dQw4w9WgXcQ"
 
 # Download audio only as MP3
-~/.claude/skills/youtube-manager/scripts/run.sh youtube_manager download "https://youtube.com/watch?v=dQw4w9WgXcQ" --audio-only
+~/.claude/skills/youtube-manager/scripts/youtube-manager download "https://youtube.com/watch?v=dQw4w9WgXcQ" --audio-only
 
 # Search for videos
-~/.claude/skills/youtube-manager/scripts/run.sh youtube_manager search "Alan Walker EDM"
+~/.claude/skills/youtube-manager/scripts/youtube-manager search "Alan Walker EDM"
 
 # Get detailed video information
-~/.claude/skills/youtube-manager/scripts/run.sh youtube_manager get-video dQw4w9WgXcQ
+~/.claude/skills/youtube-manager/scripts/youtube-manager get-video dQw4w9WgXcQ
 
 # Create a new private playlist
-~/.claude/skills/youtube-manager/scripts/run.sh youtube_manager create-playlist "My Favorites" --description "Best videos" --privacy private
+~/.claude/skills/youtube-manager/scripts/youtube-manager create-playlist "My Favorites" --description "Best videos" --privacy private
 
 # Add video to playlist
-~/.claude/skills/youtube-manager/scripts/run.sh youtube_manager add-to-playlist PLrAXtmErZgOeiKm4sgNOknGvNjby9efdf dQw4w9WgXcQ
+~/.claude/skills/youtube-manager/scripts/youtube-manager add-to-playlist PLrAXtmErZgOeiKm4sgNOknGvNjby9efdf dQw4w9WgXcQ
 ```
 
 **How It Works:**
-The `run.sh` script uses `uv` to:
-- Automatically create an isolated virtual environment (`.venv`)
-- Install dependencies from `pyproject.toml`
-- Execute the Python script with complete isolation
-- No manual installation or setup required
+The binary is a self-contained Go executable that:
+- Requires no Python installation or virtual environment
+- Has all dependencies compiled in
+- Executes directly without any setup
+- Provides instant execution with no overhead
 
 **Operations:**
 
@@ -123,11 +115,9 @@ The `run.sh` script uses `uv` to:
 ## Prerequisites
 
 ### System Requirements
-- **uv** - Python package manager (https://docs.astral.sh/uv/)
 - **GCP Project** with YouTube Data API v3 enabled
-- **Google OAuth Credentials** stored in `~/.gcp/scm-pwd-web.json`
-- **yt-dlp** (installed automatically via dependencies)
-- Python 3.8+ (managed by uv)
+- **Google OAuth Credentials** stored in `~/.credentials/google_credentials.json`
+- **yt-dlp** (must be installed separately on the system)
 
 ### Google Cloud Setup
 
@@ -137,14 +127,14 @@ The `run.sh` script uses `uv` to:
    ```
 
 2. **OAuth Credentials:**
-   - Credentials should already exist at `~/.gcp/scm-pwd-web.json`
+   - Credentials should already exist at `~/.credentials/google_credentials.json`
    - Format:
      ```json
      {
-       "web": {
+       "installed": {
          "client_id": "...",
          "client_secret": "...",
-         "redirect_uris": ["http://localhost:3000/oauth2callback"]
+         "redirect_uris": ["http://localhost"]
        }
      }
      ```
@@ -152,9 +142,9 @@ The `run.sh` script uses `uv` to:
 3. **First-time Authentication:**
    ```bash
    # Run any command - will open browser for OAuth consent
-   ~/.claude/skills/youtube-manager/scripts/run.sh youtube_manager list-playlists
+   ~/.claude/skills/youtube-manager/scripts/youtube-manager list-playlists
 
-   # Token saved to ~/.claude/credentials/youtube_token.json for future use
+   # Token saved to ~/.credentials/google_token.json for future use
    ```
 
 4. **Subsequent Runs:**
@@ -163,12 +153,11 @@ The `run.sh` script uses `uv` to:
    - Seamless authentication
 
 ### Installation
-**No manual installation required!** The `run.sh` script automatically:
-1. Creates an isolated virtual environment (`.venv`)
-2. Installs all dependencies from `pyproject.toml`
-3. Runs the script with proper isolation
-
-The first run may take a few seconds to set up the environment. Subsequent runs are instant.
+**No installation required!** The binary is pre-compiled and ready to use:
+- Self-contained Go executable
+- No dependencies to install
+- No virtual environments needed
+- Instant execution
 
 ## Common Workflows
 
@@ -176,53 +165,53 @@ The first run may take a few seconds to set up the environment. Subsequent runs 
 
 ```bash
 # List all playlists
-~/.claude/skills/youtube-manager/scripts/run.sh youtube_manager list-playlists
+~/.claude/skills/youtube-manager/scripts/youtube-manager list-playlists
 
 # Get videos from a playlist
-~/.claude/skills/youtube-manager/scripts/run.sh youtube_manager get-playlist PLxxx
+~/.claude/skills/youtube-manager/scripts/youtube-manager get-playlist PLxxx
 ```
 
 ### 2. Download Videos
 
 ```bash
 # Download best quality video
-~/.claude/skills/youtube-manager/scripts/run.sh youtube_manager download "https://youtube.com/watch?v=VIDEO_ID"
+~/.claude/skills/youtube-manager/scripts/youtube-manager download "https://youtube.com/watch?v=VIDEO_ID"
 
 # Download to specific directory
-~/.claude/skills/youtube-manager/scripts/run.sh youtube_manager download "URL" --output ~/Downloads
+~/.claude/skills/youtube-manager/scripts/youtube-manager download "URL" --output ~/Downloads
 
 # Download audio only (MP3)
-~/.claude/skills/youtube-manager/scripts/run.sh youtube_manager download "URL" --audio-only
+~/.claude/skills/youtube-manager/scripts/youtube-manager download "URL" --audio-only
 ```
 
 ### 3. Search and Discover
 
 ```bash
 # Search for videos
-~/.claude/skills/youtube-manager/scripts/run.sh youtube_manager search "Alan Walker"
+~/.claude/skills/youtube-manager/scripts/youtube-manager search "Alan Walker"
 
 # Get detailed video information
-~/.claude/skills/youtube-manager/scripts/run.sh youtube_manager get-video VIDEO_ID
+~/.claude/skills/youtube-manager/scripts/youtube-manager get-video VIDEO_ID
 ```
 
 ### 4. Manage Playlists
 
 ```bash
 # Create a new playlist
-~/.claude/skills/youtube-manager/scripts/run.sh youtube_manager create-playlist "My Collection"
+~/.claude/skills/youtube-manager/scripts/youtube-manager create-playlist "My Collection"
 
 # Add video to playlist
-~/.claude/skills/youtube-manager/scripts/run.sh youtube_manager add-to-playlist PLAYLIST_ID VIDEO_ID
+~/.claude/skills/youtube-manager/scripts/youtube-manager add-to-playlist PLAYLIST_ID VIDEO_ID
 
 # Delete playlist
-~/.claude/skills/youtube-manager/scripts/run.sh youtube_manager delete-playlist PLAYLIST_ID
+~/.claude/skills/youtube-manager/scripts/youtube-manager delete-playlist PLAYLIST_ID
 ```
 
 ## Best Practices
 
 ### Authentication
 - **First run:** Browser will open for OAuth consent
-- **Token storage:** Credentials saved to `~/.claude/credentials/youtube_token.json`
+- **Token storage:** Credentials saved to `~/.credentials/google_token.json`
 - **Auto-refresh:** Token automatically refreshed when expired
 
 ### Video Downloads
@@ -264,18 +253,15 @@ When users request YouTube operations:
 ## Security & Privacy
 
 - **OAuth authentication:** Uses secure OAuth 2.0 flow
-- **Local credentials:** Stores credentials in `~/.claude/credentials/`
+- **Local credentials:** Stores credentials in `~/.credentials/`
 - **API access:** Only requests minimum required scopes
-- **No logging:** Script does not log or store video content
+- **No logging:** Binary does not log or store video content
 - **Secure transfer:** All transfers use HTTPS
 
 ## Dependencies
 
-Automatically installed by uv:
-- `google-api-python-client` - YouTube Data API v3 client
-- `google-auth-httplib2` - Authentication transport
-- `google-auth-oauthlib` - OAuth 2.0 flow
-- `yt-dlp` - Video download tool
+The binary is self-contained with all Go dependencies compiled in. External requirements:
+- `yt-dlp` - Must be installed separately for video downloads
 
 ## Response Approach
 

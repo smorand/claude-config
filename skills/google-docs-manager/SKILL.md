@@ -88,59 +88,48 @@ Use this skill when users request:
 
 ## Available Tools
 
-### Docs Manager Script
+### Google Docs Manager Binary
 
-**Location:** `~/.claude/skills/google-docs-manager/scripts/`
+**Location:** `~/.claude/skills/google-docs-manager/scripts/google-docs-manager`
 
-**Structure:**
-```
-~/.claude/skills/google-docs-manager/scripts/
-├── run.sh                     # Generic script runner
-├── pyproject.toml             # Python dependencies
-├── .venv/                     # Auto-created virtual environment
-└── src/
-    ├── docs_manager.py        # Main CLI script
-    ├── auth.py                # Authentication module
-    └── docs_operations.py     # Document operations module
-```
+**Type:** Standalone Go binary (no Python dependencies required)
+
+**Source Code:** `~/projects/new/google-docs-manager/`
 
 **Usage:**
 
 **Basic Document Operations:**
 ```bash
-# Create from template (RECOMMENDED)
-~/.claude/skills/google-docs-manager/scripts/run.sh docs_manager create-from-template <title> <folder_id>
+# Create new document
+~/.claude/skills/google-docs-manager/scripts/google-docs-manager create <title> <folder_id>
 
-# Read document (full content)
-~/.claude/skills/google-docs-manager/scripts/run.sh docs_manager read <document_id>
-
-# Read specific section
-~/.claude/skills/google-docs-manager/scripts/run.sh docs_manager read-section <document_id> <heading_text>
+# Read document (full content as markdown)
+~/.claude/skills/google-docs-manager/scripts/google-docs-manager read <document_id>
 
 # Get document structure (headings with indices)
-~/.claude/skills/google-docs-manager/scripts/run.sh docs_manager get-structure <document_id>
+~/.claude/skills/google-docs-manager/scripts/google-docs-manager get-structure <document_id>
 
 # Set content from markdown
-~/.claude/skills/google-docs-manager/scripts/run.sh docs_manager set-markdown <document_id> <markdown_file>
+~/.claude/skills/google-docs-manager/scripts/google-docs-manager set-markdown <document_id> <markdown_file>
 
 # Update section from markdown
-~/.claude/skills/google-docs-manager/scripts/run.sh docs_manager update-section <document_id> <heading_text> <markdown_file>
+~/.claude/skills/google-docs-manager/scripts/google-docs-manager update-section <document_id> <heading_text> <markdown_file>
 
 # Insert after section
-~/.claude/skills/google-docs-manager/scripts/run.sh docs_manager insert-after-section <document_id> <heading_text> <markdown_file>
+~/.claude/skills/google-docs-manager/scripts/google-docs-manager insert-after <document_id> <heading_text> <markdown_file>
 
 # Get document info
-~/.claude/skills/google-docs-manager/scripts/run.sh docs_manager info <document_id>
+~/.claude/skills/google-docs-manager/scripts/google-docs-manager info <document_id>
 ```
 
 **Text Operations:**
 ```bash
 # Delete text range
-~/.claude/skills/google-docs-manager/scripts/run.sh docs_manager delete-text <document_id> <start_index> <end_index>
+~/.claude/skills/google-docs-manager/scripts/google-docs-manager delete-text <document_id> <start_index> <end_index>
 
 # Format text (bold, italic, underline, strikethrough, color, font-size)
-~/.claude/skills/google-docs-manager/scripts/run.sh docs_manager format-text <document_id> <start_index> <end_index> \
-    [--bold true] [--italic true] [--underline true] [--strikethrough true] \
+~/.claude/skills/google-docs-manager/scripts/google-docs-manager format-text <document_id> <start_index> <end_index> \
+    [--bold] [--italic] [--underline] [--strikethrough] \
     [--color "R,G,B"] [--font-size N]
 
 # Color Format Details:
@@ -168,141 +157,102 @@ Use this skill when users request:
 #
 # Examples:
 # Apply amber color to text at indices 100-115:
-~/.claude/skills/google-docs-manager/scripts/run.sh docs_manager format-text DOC_ID 100 115 --color "191,144,0"
+~/.claude/skills/google-docs-manager/scripts/google-docs-manager format-text DOC_ID 100 115 --color "191,144,0"
 #
 # Apply dark green with bold:
-~/.claude/skills/google-docs-manager/scripts/run.sh docs_manager format-text DOC_ID 200 210 --bold true --color "56,118,29"
+~/.claude/skills/google-docs-manager/scripts/google-docs-manager format-text DOC_ID 200 210 --bold --color "56,118,29"
 #
 # Apply black color (default):
-~/.claude/skills/google-docs-manager/scripts/run.sh docs_manager format-text DOC_ID 300 315 --color "0,0,0"
+~/.claude/skills/google-docs-manager/scripts/google-docs-manager format-text DOC_ID 300 315 --color "0,0,0"
 
 # Align paragraph
-~/.claude/skills/google-docs-manager/scripts/run.sh docs_manager align-paragraph <document_id> <start_index> <end_index> <ALIGNMENT>
+~/.claude/skills/google-docs-manager/scripts/google-docs-manager align-paragraph <document_id> <start_index> <end_index> <ALIGNMENT>
 # ALIGNMENT: START (left), CENTER, END (right), JUSTIFIED
 ```
 
 **List Operations:**
 ```bash
 # Create bulleted list
-~/.claude/skills/google-docs-manager/scripts/run.sh docs_manager create-bullets <document_id> <start_index> <end_index> [--style STYLE]
+~/.claude/skills/google-docs-manager/scripts/google-docs-manager create-bullets <document_id> <start_index> <end_index> [--style STYLE]
 # STYLES: BULLET_DISC_CIRCLE_SQUARE (default), BULLET_CHECKBOX, BULLET_ARROW_DIAMOND_DISC, BULLET_DIAMONDX_ARROW3D_SQUARE
 
 # Create numbered list
-~/.claude/skills/google-docs-manager/scripts/run.sh docs_manager create-numbered <document_id> <start_index> <end_index>
+~/.claude/skills/google-docs-manager/scripts/google-docs-manager create-numbered <document_id> <start_index> <end_index>
 
 # Remove bullets/numbering
-~/.claude/skills/google-docs-manager/scripts/run.sh docs_manager remove-bullets <document_id> <start_index> <end_index>
+~/.claude/skills/google-docs-manager/scripts/google-docs-manager remove-bullets <document_id> <start_index> <end_index>
 ```
 
 **Table Operations:**
 ```bash
 # Insert table from CSV
-~/.claude/skills/google-docs-manager/scripts/run.sh docs_manager insert-table <document_id> <csv_file> [--legend LEGEND] [--index INDEX]
-
-# Add rows
-~/.claude/skills/google-docs-manager/scripts/run.sh docs_manager add-table-rows <document_id> <table_index> <num_rows> [--after-row N]
-
-# Add columns
-~/.claude/skills/google-docs-manager/scripts/run.sh docs_manager add-table-columns <document_id> <table_index> <num_columns> [--after-column N]
-
-# Delete row
-~/.claude/skills/google-docs-manager/scripts/run.sh docs_manager delete-table-row <document_id> <table_index> <row_index>
-
-# Delete column
-~/.claude/skills/google-docs-manager/scripts/run.sh docs_manager delete-table-column <document_id> <table_index> <column_index>
+~/.claude/skills/google-docs-manager/scripts/google-docs-manager insert-table <document_id> <csv_file> [--legend LEGEND] [--index INDEX]
 
 # Update cell content
-~/.claude/skills/google-docs-manager/scripts/run.sh docs_manager update-table-cell <document_id> <table_index> <row_index> <column_index> "text"
+~/.claude/skills/google-docs-manager/scripts/google-docs-manager update-table-cell <document_id> <table_index> <row_index> <column_index> "text"
 
-# Style cell (background color, padding)
-~/.claude/skills/google-docs-manager/scripts/run.sh docs_manager style-table-cell <document_id> <table_index> <row_index> <column_index> \
-    [--bg-color "R,G,B"] [--padding N]
+# Style cell (background color)
+~/.claude/skills/google-docs-manager/scripts/google-docs-manager style-table-cell <document_id> <table_index> <row_index> <column_index> \
+    [--bg-color "R,G,B"]
 # Note: --bg-color uses same RGB format as --color (see format-text color documentation above)
 # Example: --bg-color "191,144,0" for amber (#bf9000)
-
-# Merge cells
-~/.claude/skills/google-docs-manager/scripts/run.sh docs_manager merge-table-cells <document_id> <table_index> \
-    <row_start> <row_end> <col_start> <col_end>
-
-# Unmerge cells
-~/.claude/skills/google-docs-manager/scripts/run.sh docs_manager unmerge-table-cells <document_id> <table_index> <row_index> <column_index>
 ```
 
 **Image Operations:**
 ```bash
 # Insert image
-~/.claude/skills/google-docs-manager/scripts/run.sh docs_manager insert-image <document_id> <image_url> [--legend LEGEND] [--index INDEX]
-
-# Style image (resize, border, wrapping)
-~/.claude/skills/google-docs-manager/scripts/run.sh docs_manager style-image <document_id> <image_index> \
-    [--width N] [--height N] [--wrap TYPE] [--border-width N] [--border-color "R,G,B"]
-# WRAP TYPES: INLINE (default), WRAP_TEXT, BREAK_TEXT
-# Note: --border-color uses same RGB format as --color (see format-text color documentation above)
+~/.claude/skills/google-docs-manager/scripts/google-docs-manager insert-image <document_id> <image_url> [--legend LEGEND] [--index INDEX]
 ```
 
 **Headers & Footers:**
 ```bash
 # Add/update header
-~/.claude/skills/google-docs-manager/scripts/run.sh docs_manager add-header <document_id> "text" [--page-number]
+~/.claude/skills/google-docs-manager/scripts/google-docs-manager add-header <document_id> <text> [--page-number]
 
 # Add/update footer
-~/.claude/skills/google-docs-manager/scripts/run.sh docs_manager add-footer <document_id> "text" [--page-number]
-```
-
-**Table of Contents:**
-```bash
-# Update table of contents
-~/.claude/skills/google-docs-manager/scripts/run.sh docs_manager update-toc <document_id>
+~/.claude/skills/google-docs-manager/scripts/google-docs-manager add-footer <document_id> <text> [--page-number]
 ```
 
 **Examples:**
 ```bash
-# Create a new document from template
-~/.claude/skills/google-docs-manager/scripts/run.sh docs_manager create-from-template "Q4 Report" 1folderabc123
+# Create a new document
+~/.claude/skills/google-docs-manager/scripts/google-docs-manager create "Q4 Report" 1folderabc123
 
 # Read full document
-~/.claude/skills/google-docs-manager/scripts/run.sh docs_manager read 1docabc123xyz
-
-# Read specific chapter
-~/.claude/skills/google-docs-manager/scripts/run.sh docs_manager read-section 1docabc123xyz "Introduction"
+~/.claude/skills/google-docs-manager/scripts/google-docs-manager read 1docabc123xyz
 
 # Get document structure
-~/.claude/skills/google-docs-manager/scripts/run.sh docs_manager get-structure 1docabc123xyz
+~/.claude/skills/google-docs-manager/scripts/google-docs-manager get-structure 1docabc123xyz
 
 # Set content from markdown file
-~/.claude/skills/google-docs-manager/scripts/run.sh docs_manager set-markdown 1docabc123xyz content.md
+~/.claude/skills/google-docs-manager/scripts/google-docs-manager set-markdown 1docabc123xyz content.md
 
 # Update specific section
-~/.claude/skills/google-docs-manager/scripts/run.sh docs_manager update-section 1docabc123xyz "Methodology" methodology.md
+~/.claude/skills/google-docs-manager/scripts/google-docs-manager update-section 1docabc123xyz "Methodology" methodology.md
 
 # Insert table with legend
-~/.claude/skills/google-docs-manager/scripts/run.sh docs_manager insert-table 1docabc123xyz data.csv --legend "Table 1: Sales Data Q4 2024"
+~/.claude/skills/google-docs-manager/scripts/google-docs-manager insert-table 1docabc123xyz data.csv --legend "Table 1: Sales Data Q4 2024"
 
 # Insert image with legend
-~/.claude/skills/google-docs-manager/scripts/run.sh docs_manager insert-image 1docabc123xyz "https://example.com/chart.png" --legend "Figure 1: Revenue Trends"
+~/.claude/skills/google-docs-manager/scripts/google-docs-manager insert-image 1docabc123xyz "https://example.com/chart.png" --legend "Figure 1: Revenue Trends"
 
 # Apply color formatting (convert hex #bf9000 to RGB 191,144,0)
-~/.claude/skills/google-docs-manager/scripts/run.sh docs_manager format-text 1docabc123xyz 100 115 --color "191,144,0"
+~/.claude/skills/google-docs-manager/scripts/google-docs-manager format-text 1docabc123xyz 100 115 --color "191,144,0"
 
 # Apply multiple formatting options (green + bold)
-~/.claude/skills/google-docs-manager/scripts/run.sh docs_manager format-text 1docabc123xyz 200 215 --bold true --color "56,118,29"
-
-# Update table of contents
-~/.claude/skills/google-docs-manager/scripts/run.sh docs_manager update-toc 1docabc123xyz
+~/.claude/skills/google-docs-manager/scripts/google-docs-manager format-text 1docabc123xyz 200 215 --bold --color "56,118,29"
 ```
 
 **How It Works:**
-The `run.sh` script uses `uv` to:
-- Automatically create an isolated virtual environment (`.venv`)
-- Install dependencies from `pyproject.toml`
-- Execute the Python script with complete isolation
-- No manual installation or setup required
+The binary is a standalone Go executable that:
+- Requires no Python installation or virtual environment
+- Uses OAuth2 credentials stored in `~/.credentials/`
+- Provides fast, direct access to Google Docs API
+- Can be rebuilt from source at `~/projects/new/google-docs-manager/`
 
-## Template Document
+## Default Styles
 
-**Template URL:** https://docs.google.com/document/d/1lcUWzmqtj-h0OMdM_NcvDN_qa4EyAfwCgE-IZUAlLPc
-
-This template includes pre-configured styles:
+Documents created with the `create` command use standard Google Docs styles:
 - **Title** style (for `# title`)
 - **Heading 1** style (for `## chapter`)
 - **Heading 2** style (for `### sub-chapter`)
@@ -330,14 +280,13 @@ This template includes pre-configured styles:
 
 ## Operations
 
-### 1. Create Document from Template
-Creates a new document by copying the template and clearing its content, preserving styles.
+### 1. Create Document
+Creates a new blank Google Doc with standard styles.
 
 **Process:**
-1. Copy template document to destination folder
-2. Clear all content (preserving styles)
-3. Insert empty table of contents placeholder
-4. Return new document ID
+1. Create new document in specified folder
+2. Apply standard Google Docs styles
+3. Return new document ID
 
 ### 2. Read Document
 Extract document content as markdown or plain text.
@@ -471,27 +420,14 @@ Figure 1: Revenue Trends  (italic, below image, left-aligned)
 
 **Example Workflow:**
 ```bash
-# 1. Upload image to Drive
-~/.claude/skills/google-drive-manager/scripts/run.sh drive_manager upload image.png --parent FOLDER_ID
+# 1. Upload image to Drive (using google-drive-manager skill)
+# Use the google-drive-manager skill to upload the image and get FILE_ID
 
-# 2. Make public (using Python script)
-python3 << 'EOF'
-from google.oauth2.credentials import Credentials
-from googleapiclient.discovery import build
-import json
-
-with open('~/.claude/credentials/google_token.json', 'r') as f:
-    token_data = json.load(f)
-creds = Credentials(token=token_data['token'], ...)
-service = build('drive', 'v3', credentials=creds)
-service.permissions().create(
-    fileId='FILE_ID',
-    body={'type': 'anyone', 'role': 'reader'}
-).execute()
-EOF
+# 2. Make image publicly accessible
+# Use the google-drive-manager skill to set permissions (type: anyone, role: reader)
 
 # 3. Insert into document
-~/.claude/skills/google-docs-manager/scripts/run.sh docs_manager insert-image DOC_ID \
+~/.claude/skills/google-docs-manager/scripts/google-docs-manager insert-image DOC_ID \
     "https://drive.google.com/uc?export=view&id=FILE_ID" \
     --legend "Figure 1: Description"
 ```
@@ -521,10 +457,9 @@ After running this command, you must manually complete the TOC insertion:
 ## Prerequisites
 
 ### System Requirements
-- **uv** - Python package manager (https://docs.astral.sh/uv/)
+- **Binary:** Pre-compiled Go binary (no runtime dependencies)
 - **GCP Project** with Docs API enabled
-- **Google OAuth Credentials** stored in `~/.claude/credentials/`
-- Python 3.8+ (managed by uv)
+- **Google OAuth Credentials** stored in `~/.credentials/`
 
 ### Google Cloud Setup
 
@@ -539,20 +474,20 @@ After running this command, you must manually complete the TOC insertion:
    - Navigate to APIs & Services > Credentials
    - Create OAuth 2.0 Client ID (Desktop application type)
    - Download credentials as JSON file
-   - Save to `~/.claude/credentials/google_credentials.json`
+   - Save to `~/.credentials/google_credentials.json`
 
 3. **First-time Authentication:**
    ```bash
    # Create credentials directory
-   mkdir -p ~/.claude/credentials
+   mkdir -p ~/.credentials
 
    # Copy downloaded credentials
-   cp ~/Downloads/client_secret_*.json ~/.claude/credentials/google_credentials.json
+   cp ~/Downloads/client_secret_*.json ~/.credentials/google_credentials.json
 
    # Run any command - will open browser for OAuth consent
-   ~/.claude/skills/google-docs-manager/scripts/run.sh docs_manager info 1lcUWzmqtj-h0OMdM_NcvDN_qa4EyAfwCgE-IZUAlLPc
+   ~/.claude/skills/google-docs-manager/scripts/google-docs-manager info <document_id>
 
-   # Token saved to ~/.claude/credentials/google_token.json for future use
+   # Token saved to ~/.credentials/google_token.json for future use
    ```
 
 4. **Subsequent Runs:**
@@ -561,82 +496,70 @@ After running this command, you must manually complete the TOC insertion:
    - Seamless authentication
 
 ### Installation
-**No manual installation required!** The `run.sh` script automatically:
-1. Creates an isolated virtual environment (`.venv`)
-2. Installs all dependencies from `pyproject.toml`
-3. Runs the script with proper isolation
-
-The first run may take a few seconds to set up the environment. Subsequent runs are instant.
+**No installation required!** The binary is pre-compiled and ready to use:
+- Just run the binary directly
+- No dependencies to install
+- No virtual environment needed
 
 ## Common Workflows
 
 ### 1. Create New Report
 
 ```bash
-# Create from template
-DOC_ID=$(~/.claude/skills/google-docs-manager/scripts/run.sh docs_manager create-from-template "Q4 Sales Report" 1folderabc123 | grep "Document ID:" | cut -d' ' -f3)
+# Create new document
+DOC_ID=$(~/.claude/skills/google-docs-manager/scripts/google-docs-manager create "Q4 Sales Report" 1folderabc123 | grep "Document ID:" | cut -d' ' -f3)
 
 # Set content from markdown
-~/.claude/skills/google-docs-manager/scripts/run.sh docs_manager set-markdown $DOC_ID report.md
+~/.claude/skills/google-docs-manager/scripts/google-docs-manager set-markdown $DOC_ID report.md
 
 # Add table
-~/.claude/skills/google-docs-manager/scripts/run.sh docs_manager insert-table $DOC_ID sales_data.csv --legend "Table 1: Quarterly Sales"
+~/.claude/skills/google-docs-manager/scripts/google-docs-manager insert-table $DOC_ID sales_data.csv --legend "Table 1: Quarterly Sales"
 
 # Add chart image
-~/.claude/skills/google-docs-manager/scripts/run.sh docs_manager insert-image $DOC_ID "https://charts.example.com/q4.png" --legend "Figure 1: Sales Trends"
-
-# Update TOC
-~/.claude/skills/google-docs-manager/scripts/run.sh docs_manager update-toc $DOC_ID
+~/.claude/skills/google-docs-manager/scripts/google-docs-manager insert-image $DOC_ID "https://charts.example.com/q4.png" --legend "Figure 1: Sales Trends"
 ```
 
 ### 2. Update Existing Document Section
 
 ```bash
-# Read current section
-~/.claude/skills/google-docs-manager/scripts/run.sh docs_manager read-section 1docabc123 "Methodology" > methodology.md
+# Read current section (requires custom implementation - use get-structure to find section boundaries)
+~/.claude/skills/google-docs-manager/scripts/google-docs-manager get-structure 1docabc123
 
 # Edit methodology.md locally...
 
 # Update section
-~/.claude/skills/google-docs-manager/scripts/run.sh docs_manager update-section 1docabc123 "Methodology" methodology.md
-
-# Update TOC
-~/.claude/skills/google-docs-manager/scripts/run.sh docs_manager update-toc 1docabc123
+~/.claude/skills/google-docs-manager/scripts/google-docs-manager update-section 1docabc123 "Methodology" methodology.md
 ```
 
 ### 3. Generate Report from Data
 
 ```bash
 # Create document
-DOC_ID=$(~/.claude/skills/google-docs-manager/scripts/run.sh docs_manager create-from-template "Analysis Report" 1folder123 | grep "Document ID:" | cut -d' ' -f3)
+DOC_ID=$(~/.claude/skills/google-docs-manager/scripts/google-docs-manager create "Analysis Report" 1folder123 | grep "Document ID:" | cut -d' ' -f3)
 
 # Generate markdown report from data
 python generate_report.py --output report.md
 
 # Set content
-~/.claude/skills/google-docs-manager/scripts/run.sh docs_manager set-markdown $DOC_ID report.md
+~/.claude/skills/google-docs-manager/scripts/google-docs-manager set-markdown $DOC_ID report.md
 
 # Add multiple tables
 for table in results/*.csv; do
     legend=$(basename "$table" .csv | sed 's/_/ /g')
-    ~/.claude/skills/google-docs-manager/scripts/run.sh docs_manager insert-table $DOC_ID "$table" --legend "Table: $legend"
+    ~/.claude/skills/google-docs-manager/scripts/google-docs-manager insert-table $DOC_ID "$table" --legend "Table: $legend"
 done
-
-# Update TOC
-~/.claude/skills/google-docs-manager/scripts/run.sh docs_manager update-toc $DOC_ID
 ```
 
 ## Best Practices
 
 ### Document Creation
-- **Always use template:** Start with template to ensure consistent styling
-- **Clear before writing:** Template copy clears content but preserves styles
-- **TOC placement:** Table of contents is inserted at document start
+- **Use create command:** Creates new documents with standard Google Docs styles
+- **Set content from markdown:** Use `set-markdown` to populate document with structured content
+- **Add elements incrementally:** Use insert-table and insert-image to add data visualizations
 
 ### Content Management
 - **Section updates:** Use section updates for partial modifications to preserve other content
 - **Structure first:** Use `get-structure` to understand document organization
-- **TOC updates:** Always update TOC after content changes
 
 ### Markdown Conversion
 - **Heading levels:** Follow markdown to heading style mapping
@@ -646,7 +569,7 @@ done
 ### Formatting
 - **Table legends:** Always in italic above the table
 - **Image legends:** Always in italic below the image, left-aligned
-- **Consistent styles:** Use template styles for uniform formatting
+- **Consistent styles:** Use standard Google Docs styles for uniform formatting
 
 ### Performance
 - **Batch operations:** Group multiple updates when possible
@@ -689,27 +612,25 @@ When users request Docs operations:
 
 **Response:**
 ```
-I'll create a new Google Doc from the template and add your content.
+I'll create a new Google Doc and add your content.
 
 Creating document...
 ```
 
 **Execute:**
 ```bash
-~/.claude/skills/google-docs-manager/scripts/run.sh docs_manager create-from-template "Q4 Report" 1folderabc123
+~/.claude/skills/google-docs-manager/scripts/google-docs-manager create "Q4 Report" 1folderabc123
 ```
 
 **Then:**
 ```bash
-~/.claude/skills/google-docs-manager/scripts/run.sh docs_manager set-markdown 1newdoc123 content.md
-~/.claude/skills/google-docs-manager/scripts/run.sh docs_manager update-toc 1newdoc123
+~/.claude/skills/google-docs-manager/scripts/google-docs-manager set-markdown 1newdoc123 content.md
 ```
 
 **Final response:**
 ```
-✅ Created document "Q4 Report"
-✅ Added content from markdown
-✅ Updated table of contents
+Created document "Q4 Report"
+Added content from markdown
 
 Document link: https://docs.google.com/document/d/1newdoc123/edit
 ```
@@ -727,15 +648,13 @@ First, let me check the document structure...
 
 **Execute:**
 ```bash
-~/.claude/skills/google-docs-manager/scripts/run.sh docs_manager get-structure 1docabc123
-~/.claude/skills/google-docs-manager/scripts/run.sh docs_manager update-section 1docabc123 "Conclusion" new_conclusion.md
-~/.claude/skills/google-docs-manager/scripts/run.sh docs_manager update-toc 1docabc123
+~/.claude/skills/google-docs-manager/scripts/google-docs-manager get-structure 1docabc123
+~/.claude/skills/google-docs-manager/scripts/google-docs-manager update-section 1docabc123 "Conclusion" new_conclusion.md
 ```
 
 **Final response:**
 ```
-✅ Updated 'Conclusion' section
-✅ Refreshed table of contents
+Updated 'Conclusion' section
 
 The Conclusion section has been updated while preserving all other content.
 ```
@@ -745,10 +664,10 @@ The Conclusion section has been updated while preserving all other content.
 ### "Google OAuth credentials not found"
 ```bash
 # Create credentials directory
-mkdir -p ~/.claude/credentials
+mkdir -p ~/.credentials
 
 # Download OAuth credentials from Google Cloud Console
-# Save to ~/.claude/credentials/google_credentials.json
+# Save to ~/.credentials/google_credentials.json
 ```
 
 ### "Permission denied" errors
@@ -766,32 +685,27 @@ gcloud services enable docs.googleapis.com drive.googleapis.com
 - Use `get-structure` to see all available headings
 - Check heading style (must be Heading 1-5, not just bold text)
 
-### "Template access denied"
-- Ensure template document is accessible
-- Share template with service account or OAuth user
-- Verify template URL is correct
-
 ### Re-authenticate
 ```bash
 # Delete token to trigger new OAuth flow
-rm ~/.claude/credentials/google_token.json
+rm ~/.credentials/google_token.json
 # Run any command to re-authenticate
 ```
 
 ## Security & Privacy
 
 - **OAuth authentication:** Uses secure OAuth 2.0 flow
-- **Local credentials:** Stores credentials in `~/.claude/credentials/`
+- **Local credentials:** Stores credentials in `~/.credentials/`
 - **API access:** Only requests minimum required scopes
-- **No logging:** Script does not log or store document content
+- **No logging:** Binary does not log or store document content
 - **Secure transfer:** All transfers use HTTPS
 
 ## Dependencies
 
-Automatically installed by uv:
-- `google-api-python-client` - Google Docs/Drive API client
-- `google-auth-httplib2` - Authentication transport
-- `google-auth-oauthlib` - OAuth 2.0 flow
+**None!** The binary is self-contained with all dependencies compiled in:
+- Google Docs/Drive API client libraries (compiled into binary)
+- OAuth 2.0 authentication (compiled into binary)
+- No external runtime dependencies required
 
 ## Response Approach
 
@@ -800,8 +714,24 @@ To accomplish Docs management tasks:
 1. Identify the specific operation requested
 2. Gather required parameters (document ID, content, sections)
 3. Check document structure if needed (get-structure)
-4. Execute the appropriate command
-5. Update table of contents if content changed
-6. Monitor output for progress and errors
-7. Report results with document link
-8. Handle errors with appropriate troubleshooting steps
+4. Execute the appropriate binary command
+5. Monitor output for progress and errors
+6. Report results with document link
+7. Handle errors with appropriate troubleshooting steps
+
+## Building from Source
+
+To rebuild the binary after making changes:
+
+```bash
+# Navigate to source directory
+cd ~/projects/new/google-docs-manager/
+
+# Build the binary
+make
+
+# Copy to skill directory
+cp google-docs-manager ~/.claude/skills/google-docs-manager/scripts/
+```
+
+The binary will be compiled with all dependencies included.
