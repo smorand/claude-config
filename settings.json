@@ -4,8 +4,7 @@
   "permissions": {
     "defaultMode": "bypassPermissions",
     "additionalDirectories": [
-      "/Users/sebastien.morand/.logs",
-      "/Users/sebastien.morand/projects/oa-data-btdpservices/btdp-framework-lib/modules/btdp-fastapi/src/"
+      "/home/sebastien/.logs"
     ]
   },
   "model": "sonnet",

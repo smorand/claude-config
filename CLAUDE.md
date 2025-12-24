@@ -3,10 +3,8 @@
 ## Personal Information
 
 **Name:** Sebastien MORAND.
-**Email:** sebastien.morand@loreal.com.
+**Email:** seb.morand@gmail.com.
 **Role:** CTO Data & AI at L'Oréal. In charge of Beauty Tech Data Platform (BTDP).
-**ADM Identity:** sebastien.morand-adm@loreal.com (for sensitive GCP operations).
-**L'Oréal GCP Organization ID:** 1090299993982.
 
 ---
 
@@ -19,24 +17,6 @@ Whenever you make implementation on a project, you must ensure there is up-to-da
 When the user is refering to "Now" or "Today", you MUST use the `date` command to find exactly the date of today.
 
 When the user says "I have a downloaded email" followed by a title or subject, it means the email is available in `~/Downloads/` folder as a `.eml` file. Search for `*.eml` files in that directory related to the provided title/subject. If the "downloaded" word is not mentionned, it can be professional email or personal email, use the appropriate skill.
-
----
-
-## BTDP Masterdata & Resource Retrieval
-
-**CRITICAL:** When the user asks to search, find, query, or get information about BTDP/L'Oréal resources (GCP projects, datasets, tables, groups, applications, repositories, domains, IT organizations, people, services, SKUs, APIs), you **MUST use the `btdp-it-masterdata-retrieval` skill**.
-
-**DO NOT** filesystem commands (find, ls, grep) or direct bash commands (bq, gcloud) to search for BTDP resources without first loading the `btdp-it-masterdata-retrieval` skill and get the appropriate search protocol.
-
-**Examples that MUST trigger the skill:**
-- "Search for the project btdp sec"
-- "Find the dataset for sales data"
-- "What is the table for Global Spend"
-- "Show me the group for data team"
-- "Get the application for inventory"
-- "List projects with btdp in the name"
-
-Always use the skill for:** projects, datasets, tables, groups, applications, repositories, domains, IT organizations, people/users, services, SKUs, APIs, lineage queries.
 
 ---
 
@@ -68,12 +48,8 @@ Always use the skill for:** projects, datasets, tables, groups, applications, re
 - When requiring to list locally, use /bin/ls to ensure it's working as expected
 - When I'm talking about date and time, to ensure you know the current date & time always use the `date` commnand
 - **NEVER** use a find command on my home, if you really think that could be the only way to solve a request, ask first how to do.
-- When you want to delete a file or a folder, use the `trash` command. **NEVER** use the `rm` command.
-- When requested to run an API, if the method is "GET" then never put the header Content-Type. And if the target is api.loreal.net, then use the GCP access token except if said otherwise.
 - When using `bq` tool, never forget to put options **BEFORE** the final line argument.
-- When I say "Copy my password" or "Get my password", it means I want you to run `cat ~/.gcp/pwd|pbcopy` command
 - When requesting to query a table, ensure first you load the schema.
-- When a table in itg-btdppublished-gbl-ww is empty in production, check the current identity with `gcloud` command. If it's my ADM account, switch back to my standard account.
 
 ---
 
