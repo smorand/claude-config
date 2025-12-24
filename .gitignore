@@ -20,3 +20,5 @@ archives/chrome-devtools-mcp
 archives/claude-code-tresor
 archives/project-framework
 credentials
+.credentials.json
+plugins/marketplaces/claude-plugins-official
